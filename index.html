@@ -1,0 +1,2288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartWarehouse AI</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+
+body{
+    background:#07101a;
+    color:#edf4fb;
+}
+
+.app{display:flex;min-height:100vh}
+
+.sidebar{
+    width:230px;
+    position:fixed;
+    top:0;
+    bottom:0;
+    background:#0b141f;
+    border-right:1px solid #1d2b3c;
+    padding:22px 14px;
+}
+
+.logo{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:28px;
+    padding:8px;
+}
+
+.logo span{color:#5790ff}
+
+.online{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:#42d99c;
+    margin-right:7px;
+}
+
+.nav-title{
+    color:#526277;
+    font-size:8px;
+    letter-spacing:1.5px;
+    margin:20px 10px 8px;
+}
+
+.nav{
+    color:#8290a4;
+    padding:12px;
+    border-radius:7px;
+    margin:3px 0;
+    cursor:pointer;
+    font-size:10px;
+}
+
+.nav:hover{background:#131e2c;color:#fff}
+
+.nav.active{
+    background:#162337;
+    color:#fff;
+    border-left:3px solid #5790ff;
+}
+
+.main{
+    margin-left:230px;
+    width:calc(100% - 230px);
+    padding:28px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid #1e2b3b;
+    padding-bottom:20px;
+}
+
+.header h1{font-size:23px}
+.header p{
+    color:#718097;
+    font-size:10px;
+    margin-top:6px
+}
+
+.status{
+    background:#0d201b;
+    color:#4cdda0;
+    border:1px solid #275044;
+    border-radius:6px;
+    padding:9px 12px;
+    font-size:8px;
+}
+
+.section{margin-top:22px}
+
+.section-head{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+}
+
+.section-head h2{font-size:14px}
+
+.metrics{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+}
+
+.metric,.card,.product,.table{
+    background:#0d1722;
+    border:1px solid #203044;
+    border-radius:9px;
+}
+
+.metric{
+    padding:17px;
+}
+
+.metric-label{
+    color:#6e7d91;
+    font-size:8px;
+}
+
+.metric-number{
+    font-size:27px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.metric-sub{
+    color:#65748a;
+    font-size:8px;
+    margin-top:5px;
+}
+
+.blue{color:#6e9bff}
+.green{color:#4bd89d}
+.orange{color:#ffb95e}
+.red{color:#ff6878}
+
+.grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+}
+
+.grid3{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+}
+
+.card{padding:18px}
+
+.label{
+    color:#718097;
+    font-size:8px;
+    letter-spacing:1px;
+}
+
+.title{
+    font-size:14px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+.text{
+    color:#8290a2;
+    font-size:9px;
+    line-height:1.7;
+    margin-top:8px;
+}
+
+.ai-box{
+    margin-top:16px;
+    padding:16px;
+    background:#0c1928;
+    border:1px solid #29405f;
+    border-radius:8px;
+}
+
+.ai-title{
+    color:#83aaff;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.ai-text{
+    color:#8996a8;
+    font-size:9px;
+    line-height:1.7;
+    margin-top:7px;
+}
+
+.action{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:13px 0;
+    border-bottom:1px solid #1c2939;
+}
+
+.action:last-child{border-bottom:none}
+
+.action-left{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+}
+
+.dot.red{background:#ff5e70}
+.dot.orange{background:#ffb34f}
+.dot.green{background:#45d79b}
+
+.action-name{
+    font-size:9px;
+    font-weight:bold;
+}
+
+.action-desc{
+    color:#718096;
+    font-size:8px;
+    margin-top:4px;
+}
+
+.product{
+    padding:17px;
+}
+
+.product-top{
+    display:flex;
+    justify-content:space-between;
+}
+
+.product-name{
+    font-size:13px;
+    font-weight:bold;
+}
+
+.product-code{
+    color:#68778b;
+    font-size:8px;
+    margin-top:4px;
+}
+
+.pill{
+    display:inline-block;
+    padding:5px 8px;
+    border-radius:5px;
+    font-size:7px;
+    font-weight:bold;
+}
+
+.good{
+    background:#10271f;
+    color:#51dca1;
+}
+
+.warn{
+    background:#2c2112;
+    color:#ffbc61;
+}
+
+.critical{
+    background:#2b151b;
+    color:#ff6b7b;
+}
+
+.stock{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    margin-top:18px;
+}
+
+.stock-number{
+    font-size:29px;
+    font-weight:bold;
+}
+
+.small{
+    color:#68768b;
+    font-size:8px;
+}
+
+.stock-details{
+    color:#758297;
+    text-align:right;
+    font-size:8px;
+    line-height:1.8;
+}
+
+.bar{
+    height:5px;
+    background:#1b2838;
+    border-radius:5px;
+    overflow:hidden;
+    margin-top:13px;
+}
+
+.fill{
+    height:100%;
+    background:#5b8cff;
+}
+
+.table{overflow:hidden}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1.2fr .6fr 1.2fr .8fr .8fr;
+    gap:10px;
+    padding:13px 16px;
+    border-bottom:1px solid #1b2737;
+    align-items:center;
+}
+
+.row:last-child{border-bottom:none}
+
+.row div{font-size:8px}
+
+.row.head div{
+    color:#627187;
+    font-size:7px;
+}
+
+.order-id{
+    color:#89aaff;
+    font-weight:bold;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.form-group label{
+    color:#718097;
+    font-size:8px;
+}
+
+input,select{
+    background:#09111b;
+    color:#fff;
+    border:1px solid #29384c;
+    border-radius:6px;
+    padding:10px;
+    outline:none;
+    font-size:9px;
+}
+
+input:focus,select:focus{
+    border-color:#5b8cff;
+}
+
+button{
+    border:0;
+    border-radius:6px;
+    padding:10px 14px;
+    font-size:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.primary{
+    background:#2e6ee5;
+    color:#fff;
+}
+
+.secondary{
+    background:#202d3e;
+    color:#d3dbe5;
+}
+
+.buttons{
+    display:flex;
+    gap:8px;
+    margin-top:18px;
+}
+
+.big-score{
+    font-size:39px;
+    font-weight:bold;
+    color:#ff6979;
+    margin-top:8px;
+}
+
+.factor{
+    margin-top:15px;
+}
+
+.factor-top{
+    display:flex;
+    justify-content:space-between;
+    color:#77869b;
+    font-size:8px;
+    margin-bottom:5px;
+}
+
+.factor .bar{margin:0}
+
+.total{
+    margin-top:18px;
+    padding:15px;
+    background:#09111b;
+    border:1px solid #27374c;
+    border-radius:7px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.total-value{
+    color:#53dca3;
+    font-size:21px;
+    font-weight:bold;
+}
+
+.forecast-number{
+    font-size:30px;
+    font-weight:bold;
+    margin-top:9px;
+}
+
+.replenish-number{
+    font-size:28px;
+    font-weight:bold;
+    color:#ffb85d;
+    margin-top:9px;
+}
+
+.risk-number{
+    font-size:28px;
+    font-weight:bold;
+    color:#ff6878;
+    margin-top:9px;
+}
+
+.history{
+    padding:13px 4px;
+    border-bottom:1px solid #1b2737;
+    display:grid;
+    grid-template-columns:110px 1fr 120px 90px;
+    gap:12px;
+    align-items:center;
+}
+
+.history:last-child{border-bottom:none}
+
+.history-date{
+    color:#68778c;
+    font-size:7px;
+}
+
+.history-order{
+    color:#8caaff;
+    font-size:9px;
+    font-weight:bold;
+}
+
+.history-desc{
+    color:#7c899b;
+    font-size:8px;
+}
+
+#toast{
+    display:none;
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    padding:13px 17px;
+    background:#142033;
+    border:1px solid #34455e;
+    border-radius:7px;
+    font-size:9px;
+    z-index:100;
+}
+
+@media(max-width:900px){
+    .metrics{grid-template-columns:1fr 1fr}
+    .grid2,.grid3{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+    .sidebar{display:none}
+    .main{
+        margin-left:0;
+        width:100%;
+        padding:15px;
+    }
+    .metrics,.form-grid{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<div class="logo">
+<span class="online"></span>
+SmartWarehouse <span>AI</span>
+</div>
+
+<div class="nav-title">WAREHOUSE</div>
+
+<div class="nav active" onclick="page('overview',this)">◈ Overview</div>
+<div class="nav" onclick="page('inventory',this)">▣ Inventory</div>
+<div class="nav" onclick="page('orders',this)">◫ Orders</div>
+<div class="nav" onclick="page('create',this)">＋ Create Order</div>
+<div class="nav" onclick="page('stock',this)">＋ Add Stock</div>
+
+<div class="nav-title">AI INTELLIGENCE</div>
+
+<div class="nav" onclick="page('forecast',this)">⌁ Demand Forecast</div>
+<div class="nav" onclick="page('actions',this)">⚡ AI Action Center</div>
+<div class="nav" onclick="page('conflict',this)">⚠ Order Risk</div>
+<div class="nav" onclick="page('explanation',this)">◎ AI Explanation</div>
+<div class="nav" onclick="page('simulator',this)">◇ What-If Simulator</div>
+<div class="nav" onclick="page('history',this)">◷ Decision History</div>
+
+</aside>
+
+
+<main class="main">
+
+
+<!-- OVERVIEW -->
+
+<section id="overview" class="page active">
+
+<div class="header">
+
+<div>
+<h1>Smart Warehouse Command Center</h1>
+<p>AI-powered inventory and order decision system</p>
+</div>
+
+<div class="status">
+<span class="online"></span>
+SYSTEM ONLINE
+</div>
+
+</div>
+
+
+<div class="section">
+
+<div class="metrics">
+
+<div class="metric">
+<div class="metric-label">AVAILABLE STOCK</div>
+<div class="metric-number blue" id="mStock">--</div>
+<div class="metric-sub">Units ready for allocation</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">PRODUCTS</div>
+<div class="metric-number green" id="mProducts">--</div>
+<div class="metric-sub">Active warehouse SKUs</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">ORDERS</div>
+<div class="metric-number orange" id="mOrders">--</div>
+<div class="metric-sub">Current customer demand</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">AT-RISK</div>
+<div class="metric-number red" id="mRisk">--</div>
+<div class="metric-sub">Orders requiring attention</div>
+</div>
+
+</div>
+
+
+<div class="grid2" style="margin-top:15px">
+
+<div class="card">
+
+<div class="label">AI WAREHOUSE STATUS</div>
+
+<div class="title" id="warehouseStatus">
+Analyzing warehouse...
+</div>
+
+<div class="text" id="warehouseText">
+Please wait while AI evaluates inventory and orders.
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">AI ACTION CENTER</div>
+
+<div id="overviewActions"></div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- INVENTORY -->
+
+<section id="inventory" class="page">
+
+<div class="header">
+
+<div>
+<h1>Inventory Intelligence</h1>
+<p>Stock health, availability and replenishment signals</p>
+</div>
+
+<button class="primary" onclick="page('stock')">
+＋ Add Stock
+</button>
+
+</div>
+
+<div class="section">
+
+<div class="grid3" id="inventoryInsights"></div>
+
+<div class="grid2" id="inventoryGrid" style="margin-top:15px"></div>
+
+</div>
+
+</section>
+
+
+<!-- ORDERS -->
+
+<section id="orders" class="page">
+
+<div class="header">
+
+<div>
+<h1>Orders</h1>
+<p>Customer demand and fulfillment status</p>
+</div>
+
+<button class="primary" onclick="page('create')">
+＋ Create Order
+</button>
+
+</div>
+
+<div class="section">
+
+<div class="table">
+
+<div class="row head">
+<div>ORDER</div>
+<div>PRODUCT</div>
+<div>QTY</div>
+<div>CUSTOMER</div>
+<div>PRIORITY</div>
+<div>STATUS</div>
+</div>
+
+<div id="ordersTable"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CREATE ORDER -->
+
+<section id="create" class="page">
+
+<div class="header">
+
+<div>
+<h1>Create Customer Order</h1>
+<p>Place an order and automatically evaluate warehouse risk</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div class="label">ORDER INFORMATION</div>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>PRODUCT</label>
+<select id="newProduct" onchange="productChange()">
+<option value="">Select product</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>PRODUCT ID / SKU</label>
+<input id="newSKU" readonly>
+</div>
+
+<div class="form-group">
+<label>PRICE / UNIT (₹)</label>
+<input id="newPrice" type="number" value="1000" oninput="total()">
+</div>
+
+<div class="form-group">
+<label>QUANTITY</label>
+<input id="newQty" type="number" min="1" oninput="total()">
+</div>
+
+<div class="form-group">
+<label>CUSTOMER</label>
+<input id="newCustomer" placeholder="Customer name">
+</div>
+
+<div class="form-group">
+<label>PRIORITY</label>
+<select id="newPriority">
+<option>SILVER</option>
+<option>GOLD</option>
+<option>PLATINUM</option>
+</select>
+</div>
+
+<div class="form-group">
+<label>SLA</label>
+<select id="newSLA">
+<option>NORMAL</option>
+<option>URGENT</option>
+<option>CRITICAL</option>
+</select>
+</div>
+
+</div>
+
+<div class="total">
+<div>
+<div class="label">ORDER VALUE</div>
+<div class="small">Price × Quantity</div>
+</div>
+
+<div class="total-value" id="newTotal">₹0</div>
+</div>
+
+<div class="buttons">
+<button class="primary" onclick="createOrder()">✓ Place Order</button>
+</div>
+
+<div id="createResult" class="ai-box" style="display:none"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ADD STOCK -->
+
+<section id="stock" class="page">
+
+<div class="header">
+
+<div>
+<h1>Add Warehouse Stock</h1>
+<p>Increase inventory for an existing product</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div class="label">INVENTORY UPDATE</div>
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>SELECT PRODUCT</label>
+<select id="stockProduct"></select>
+</div>
+
+<div class="form-group">
+<label>QUANTITY</label>
+<input id="stockQty" type="number" min="1" placeholder="Quantity">
+</div>
+
+</div>
+
+<div class="buttons">
+<button class="primary" onclick="addStock()">✓ Add Stock</button>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- FORECAST -->
+
+<section id="forecast" class="page">
+
+<div class="header">
+
+<div>
+<h1>Demand Forecast</h1>
+<p>AI estimates upcoming demand from current customer orders</p>
+</div>
+
+<div class="status">PREDICTIVE AI</div>
+
+</div>
+
+<div class="section">
+
+<div class="grid3" id="forecastCards"></div>
+
+<div class="ai-box">
+
+<div class="ai-title">✦ AI Forecast Explanation</div>
+
+<div class="ai-text" id="forecastText">
+Calculating expected demand...
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ACTION CENTER -->
+
+<section id="actions" class="page">
+
+<div class="header">
+
+<div>
+<h1>AI Action Center</h1>
+<p>Recommended warehouse actions based on current conditions</p>
+</div>
+
+<div class="status">DECISION SUPPORT</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div class="label">RECOMMENDED ACTIONS</div>
+
+<div id="actionList"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- CONFLICT -->
+
+<section id="conflict" class="page">
+
+<div class="header">
+
+<div>
+<h1>Order Risk Analysis</h1>
+<p>AI evaluates inventory shortage and customer importance</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="grid2">
+
+<div class="card">
+
+<div class="label">ORDER</div>
+
+<div class="title" id="riskOrder">WP-4029</div>
+
+<div class="text" id="riskDescription">
+Analyzing...
+</div>
+
+<div class="grid3" style="margin-top:18px">
+
+<div>
+<div class="small">REQUIRED</div>
+<div class="forecast-number" id="required">--</div>
+</div>
+
+<div>
+<div class="small">AVAILABLE</div>
+<div class="forecast-number green" id="available">--</div>
+</div>
+
+<div>
+<div class="small">SHORTAGE</div>
+<div class="risk-number" id="shortage">--</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="label">AI RISK SCORE</div>
+
+<div class="big-score" id="riskScore">--</div>
+
+<div class="small">RISK / 100</div>
+
+<div class="factor">
+<div class="factor-top">
+<span>Customer Priority</span>
+<span id="fCustomer">--</span>
+</div>
+<div class="bar">
+<div class="fill" id="bCustomer"></div>
+</div>
+</div>
+
+<div class="factor">
+<div class="factor-top">
+<span>Business Impact</span>
+<span id="fBusiness">--</span>
+</div>
+<div class="bar">
+<div class="fill" id="bBusiness"></div>
+</div>
+</div>
+
+<div class="factor">
+<div class="factor-top">
+<span>SLA Urgency</span>
+<span id="fSLA">--</span>
+</div>
+<div class="bar">
+<div class="fill" id="bSLA"></div>
+</div>
+</div>
+
+<div class="ai-box">
+
+<div class="ai-title">AI Recommendation</div>
+
+<div class="ai-text" id="recommendation">
+Loading recommendation...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- EXPLANATION -->
+
+<section id="explanation" class="page">
+
+<div class="header">
+
+<div>
+<h1>AI Explanation</h1>
+<p>Understand how SmartWarehouse AI reaches a decision</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div class="label">EXPLAINABLE DECISION</div>
+
+<div class="title">
+Why is the order considered risky?
+</div>
+
+<div class="text">
+The AI combines inventory availability, customer priority,
+business impact and SLA urgency to calculate fulfillment risk.
+</div>
+
+<div class="grid3" style="margin-top:18px">
+
+<div class="metric">
+<div class="metric-label">CUSTOMER PRIORITY</div>
+<div class="metric-number blue" id="eCustomer">--</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">BUSINESS IMPACT</div>
+<div class="metric-number blue" id="eBusiness">--</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">SLA URGENCY</div>
+<div class="metric-number orange" id="eSLA">--</div>
+</div>
+
+</div>
+
+<div class="ai-box">
+
+<div class="ai-title">✦ AI Reasoning</div>
+
+<div class="ai-text" id="explanationText">
+Loading...
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- SIMULATOR -->
+
+<section id="simulator" class="page">
+
+<div class="header">
+
+<div>
+<h1>What-If Simulator</h1>
+<p>Test different inventory scenarios before taking action</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div class="label">SIMULATED AVAILABLE STOCK</div>
+
+<div class="forecast-number" id="simValue">7</div>
+
+<input
+type="range"
+min="0"
+max="40"
+value="7"
+style="width:100%;margin-top:20px"
+oninput="simulate(this.value)">
+
+<div class="grid3" style="margin-top:20px">
+
+<div class="metric">
+<div class="metric-label">SHORTAGE / SURPLUS</div>
+<div class="metric-number" id="simGap">-3</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">RISK SCORE</div>
+<div class="metric-number red" id="simRisk">70</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">STATUS</div>
+<div class="metric-number orange" id="simStatus">AT RISK</div>
+</div>
+
+</div>
+
+<div class="ai-box">
+
+<div class="ai-title">✦ Scenario Recommendation</div>
+
+<div class="ai-text" id="simText">
+Move the slider to simulate inventory changes.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- HISTORY -->
+
+<section id="history" class="page">
+
+<div class="header">
+
+<div>
+<h1>Decision History</h1>
+<p>Record of warehouse actions taken during this session</p>
+</div>
+
+</div>
+
+<div class="section">
+
+<div class="card">
+
+<div id="historyList"></div>
+
+</div>
+
+</div>
+
+</section>
+
+
+</main>
+</div>
+
+<div id="toast"></div>
+
+
+<script>
+
+const API="http://127.0.0.1:5000";
+
+let inventory=[];
+let orders=[];
+let aiData=null;
+
+
+/* NAVIGATION */
+
+function page(id,el){
+
+    document.querySelectorAll(".page")
+    .forEach(x=>x.classList.remove("active"));
+
+    document.getElementById(id)
+    .classList.add("active");
+
+    document.querySelectorAll(".nav")
+    .forEach(x=>x.classList.remove("active"));
+
+    if(el)el.classList.add("active");
+
+    if(id==="inventory")renderInventory();
+    if(id==="orders")renderOrders();
+    if(id==="create")loadProducts();
+    if(id==="stock")loadStockProducts();
+    if(id==="forecast")renderForecast();
+    if(id==="actions")renderActions();
+    if(id==="conflict"||id==="explanation")loadAI();
+    if(id==="history")renderHistory();
+
+}
+
+
+/* LOAD DATA */
+
+async function loadData(){
+
+    try{
+
+        let a=await fetch(API+"/api/inventory");
+        inventory=await a.json();
+
+        let b=await fetch(API+"/api/orders");
+        orders=await b.json();
+
+        updateOverview();
+        renderInventory();
+        renderOrders();
+        loadProducts();
+        loadStockProducts();
+        renderForecast();
+        renderActions();
+
+        loadAI();
+
+    }catch(e){
+
+        console.error(e);
+
+        toast("Backend connection failed");
+
+    }
+
+}
+
+
+/* OVERVIEW */
+
+function updateOverview(){
+
+    let stock=inventory.reduce(
+        (s,x)=>s+Number(x.available_stock??x.stock??0),
+        0
+    );
+
+    let risks=orders.filter(
+        x=>x.status==="AT_RISK"
+    ).length;
+
+    document.getElementById("mStock").innerText=stock;
+    document.getElementById("mProducts").innerText=inventory.length;
+    document.getElementById("mOrders").innerText=orders.length;
+    document.getElementById("mRisk").innerText=risks;
+
+
+    let low=inventory.filter(x=>
+        Number(x.available_stock??x.stock??0)
+        <=Number(x.reorder_level??10)
+    );
+
+
+    document.getElementById("warehouseStatus").innerText=
+        risks>0
+        ?"Attention Required"
+        :"Warehouse Stable";
+
+
+    document.getElementById("warehouseText").innerText=
+        risks>0
+        ?`${risks} order(s) are at risk. AI recommends reviewing high-priority fulfillment before allocating limited stock.`
+        :"Current inventory can support the active order demand with no major AI risk detected.";
+
+
+    let html="";
+
+    if(risks){
+
+        html+=`
+        <div class="action">
+        <div class="action-left">
+        <span class="dot red"></span>
+        <div>
+        <div class="action-name">Review At-Risk Order</div>
+        <div class="action-desc">${risks} order(s) need attention</div>
+        </div>
+        </div>
+        <span class="pill critical">URGENT</span>
+        </div>`;
+
+    }
+
+    if(low.length){
+
+        html+=`
+        <div class="action">
+        <div class="action-left">
+        <span class="dot orange"></span>
+        <div>
+        <div class="action-name">Replenish Inventory</div>
+        <div class="action-desc">${low.length} product(s) below reorder level</div>
+        </div>
+        </div>
+        <span class="pill warn">REPLENISH</span>
+        </div>`;
+
+    }
+
+    if(!html){
+
+        html=`
+        <div class="action">
+        <div class="action-left">
+        <span class="dot green"></span>
+        <div>
+        <div class="action-name">No Immediate Action</div>
+        <div class="action-desc">Warehouse conditions look healthy</div>
+        </div>
+        </div>
+        <span class="pill good">SAFE</span>
+        </div>`;
+
+    }
+
+    document.getElementById("overviewActions").innerHTML=html;
+
+}
+
+
+/* INVENTORY */
+
+function renderInventory(){
+
+    let cards="";
+    let total=0;
+    let low=0;
+    let critical=0;
+
+    inventory.forEach(p=>{
+
+        let available=Number(
+            p.available_stock??p.stock??0
+        );
+
+        let reorder=Number(
+            p.reorder_level??10
+        );
+
+        total+=available;
+
+        if(available<=reorder)low++;
+        if(available<=3)critical++;
+
+        let cls=
+            available<=3
+            ?"critical"
+            :available<=reorder
+            ?"warn"
+            :"good";
+
+        let width=Math.min(
+            100,
+            Math.max(
+                5,
+                available/(reorder*2)*100
+            )
+        );
+
+        cards+=`
+
+        <div class="product">
+
+        <div class="product-top">
+
+        <div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-code">${p.sku}</div>
+        </div>
+
+        <span class="pill ${cls}">
+        ${p.status||"HEALTHY"}
+        </span>
+
+        </div>
+
+        <div class="stock">
+
+        <div>
+        <div class="stock-number">${available}</div>
+        <div class="small">AVAILABLE</div>
+        </div>
+
+        <div class="stock-details">
+        Total: ${p.stock??0}<br>
+        Reserved: ${p.reserved??0}<br>
+        Reorder: ${reorder}
+        </div>
+
+        </div>
+
+        <div class="bar">
+        <div class="fill" style="width:${width}%"></div>
+        </div>
+
+        <div class="small" style="margin-top:9px">
+        ${p.warehouse||"Main Warehouse"}
+        </div>
+
+        </div>`;
+
+    });
+
+
+    document.getElementById(
+        "inventoryGrid"
+    ).innerHTML=cards;
+
+
+    document.getElementById(
+        "inventoryInsights"
+    ).innerHTML=`
+
+    <div class="metric">
+    <div class="metric-label">AVAILABLE UNITS</div>
+    <div class="metric-number blue">${total}</div>
+    </div>
+
+    <div class="metric">
+    <div class="metric-label">REPLENISHMENT NEEDED</div>
+    <div class="metric-number orange">${low}</div>
+    </div>
+
+    <div class="metric">
+    <div class="metric-label">CRITICAL PRODUCTS</div>
+    <div class="metric-number red">${critical}</div>
+    </div>`;
+
+}
+
+
+/* ORDERS */
+
+function renderOrders(){
+
+    let html="";
+
+    orders.forEach(o=>{
+
+        let cls=
+            o.status==="AT_RISK"
+            ?"critical"
+            :"good";
+
+        html+=`
+
+        <div class="row">
+
+        <div class="order-id">${o.order_id}</div>
+
+        <div>${o.product||"-"}</div>
+
+        <div>${o.required_quantity||0}</div>
+
+        <div>${o.customer||"-"}</div>
+
+        <div>
+        <span class="pill ${o.customer_priority==="PLATINUM"?"warn":"good"}">
+        ${o.customer_priority||"SILVER"}
+        </span>
+        </div>
+
+        <div>
+        <span class="pill ${cls}">
+        ${o.status||"NORMAL"}
+        </span>
+        </div>
+
+        </div>`;
+
+    });
+
+    document.getElementById(
+        "ordersTable"
+    ).innerHTML=html||`
+    <div style="padding:20px;color:#718096;font-size:9px">
+    No orders available.
+    </div>`;
+
+}
+
+
+/* PRODUCTS */
+
+function loadProducts(){
+
+    let s=document.getElementById("newProduct");
+
+    s.innerHTML=`<option value="">Select product</option>`;
+
+    inventory.forEach(p=>{
+
+        s.innerHTML+=`
+        <option value="${p.sku}">
+        ${p.name} — ${p.sku}
+        </option>`;
+
+    });
+
+}
+
+
+function loadStockProducts(){
+
+    let s=document.getElementById("stockProduct");
+
+    if(!s)return;
+
+    s.innerHTML=`<option value="">Select product</option>`;
+
+    inventory.forEach(p=>{
+
+        s.innerHTML+=`
+        <option value="${p.sku}">
+        ${p.name} — ${p.available_stock??p.stock} available
+        </option>`;
+
+    });
+
+}
+
+
+function productChange(){
+
+    let sku=
+        document.getElementById("newProduct").value;
+
+    let p=inventory.find(x=>x.sku===sku);
+
+    if(!p)return;
+
+    document.getElementById("newSKU").value=p.sku;
+
+    let prices={
+        "LAP-15":75000,
+        "MOU-01":1200,
+        "KEY-02":2500,
+        "MON-24":12000
+    };
+
+    document.getElementById("newPrice").value=
+        prices[p.sku]||1000;
+
+    total();
+
+}
+
+
+function total(){
+
+    let price=Number(
+        document.getElementById("newPrice").value||0
+    );
+
+    let qty=Number(
+        document.getElementById("newQty").value||0
+    );
+
+    document.getElementById("newTotal").innerText=
+        "₹"+(price*qty).toLocaleString("en-IN");
+
+}
+
+
+/* CREATE ORDER */
+
+async function createOrder(){
+
+    let sku=document.getElementById("newProduct").value;
+    let qty=Number(document.getElementById("newQty").value);
+    let price=Number(document.getElementById("newPrice").value);
+    let customer=document.getElementById("newCustomer").value.trim();
+    let priority=document.getElementById("newPriority").value;
+    let sla=document.getElementById("newSLA").value;
+
+    if(!sku||!qty||!customer){
+
+        toast("Please complete order details");
+
+        return;
+    }
+
+
+    try{
+
+        let r=await fetch(
+            API+"/api/orders/create",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    product_sku:sku,
+                    quantity:qty,
+                    customer:customer,
+                    priority:priority,
+                    sla:sla,
+                    price:price
+                })
+            }
+        );
+
+        let data=await r.json();
+
+        if(!r.ok){
+
+            toast(data.message||"Order creation failed");
+
+            return;
+        }
+
+
+        document.getElementById(
+            "createResult"
+        ).style.display="block";
+
+        document.getElementById(
+            "createResult"
+        ).innerHTML=`
+
+        <div class="ai-title">
+        ✓ ORDER CREATED
+        </div>
+
+        <div class="ai-text">
+        Order ID: ${data.order?.order_id||"Created"}<br>
+        Product: ${data.order?.product||sku}<br>
+        Quantity: ${qty}<br>
+        AI Status: ${data.order?.status||"NORMAL"}
+        </div>`;
+
+
+        addHistory(
+            data.order?.order_id||"NEW ORDER",
+            "Order Created",
+            `${sku} × ${qty}`,
+            "CREATED"
+        );
+
+
+        await loadData();
+
+        toast("Order created successfully");
+
+    }catch(e){
+
+        console.error(e);
+        toast("Backend connection failed");
+
+    }
+
+}
+
+
+/* ADD STOCK */
+
+async function addStock(){
+
+    let sku=document.getElementById("stockProduct").value;
+
+    let qty=Number(
+        document.getElementById("stockQty").value
+    );
+
+    if(!sku||!qty||qty<=0){
+
+        toast("Select product and enter quantity");
+
+        return;
+    }
+
+
+    try{
+
+        let r=await fetch(
+            API+"/api/inventory/add",
+            {
+                method:"POST",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify({
+                    sku:sku,
+                    quantity:qty
+                })
+            }
+        );
+
+        let data=await r.json();
+
+        toast(
+            data.message||
+            "Stock updated successfully"
+        );
+
+
+        addHistory(
+            "INVENTORY",
+            "Stock Added",
+            `${qty} units added to ${sku}`,
+            "UPDATED"
+        );
+
+
+        await loadData();
+
+        setTimeout(
+            ()=>page("inventory"),
+            400
+        );
+
+    }catch(e){
+
+        console.error(e);
+        toast("Unable to update stock");
+
+    }
+
+}
+
+
+/* FORECAST */
+
+function getDemand(p){
+
+    return orders
+        .filter(o=>
+            o.sku===p.sku||
+            o.product===p.name
+        )
+        .reduce(
+            (sum,o)=>
+            sum+Number(o.required_quantity||0),
+            0
+        );
+
+}
+
+
+function renderForecast(){
+
+    let html="";
+    let explanation=[];
+
+    inventory.forEach(p=>{
+
+        let available=Number(
+            p.available_stock??p.stock??0
+        );
+
+        let demand=getDemand(p);
+
+        let safety=Math.max(
+            3,
+            Math.ceil(demand*0.2)
+        );
+
+        let target=demand+safety;
+
+        let replenish=Math.max(
+            0,
+            target-available
+        );
+
+        let risk;
+
+        if(available<demand)
+            risk="HIGH";
+        else if(available<target)
+            risk="MEDIUM";
+        else
+            risk="LOW";
+
+
+        let cls=
+            risk==="HIGH"
+            ?"critical"
+            :risk==="MEDIUM"
+            ?"warn"
+            :"good";
+
+
+        html+=`
+
+        <div class="card">
+
+        <div class="label">${p.sku}</div>
+
+        <div class="title">${p.name}</div>
+
+        <div class="forecast-number">
+        ${demand}
+        </div>
+
+        <div class="small">
+        EXPECTED DEMAND
+        </div>
+
+        <div style="margin-top:13px">
+
+        <div class="small">
+        Available: ${available}
+        </div>
+
+        <div class="small">
+        Safety buffer: ${safety}
+        </div>
+
+        <div class="small">
+        Recommended stock: ${target}
+        </div>
+
+        </div>
+
+        <div style="margin-top:12px">
+        <span class="pill ${cls}">
+        ${risk} RISK
+        </span>
+        </div>
+
+        </div>`;
+
+
+        if(replenish>0){
+
+            explanation.push(
+                `${p.name}: add approximately ${replenish} units`
+            );
+
+        }
+
+    });
+
+
+    document.getElementById(
+        "forecastCards"
+    ).innerHTML=html;
+
+
+    document.getElementById(
+        "forecastText"
+    ).innerText=
+        explanation.length
+        ?`AI identified replenishment opportunities: ${explanation.join(" • ")}. Forecast is based on current pending order demand plus a safety buffer.`
+        :"Current inventory provides enough coverage for the active order demand.";
+
+}
+
+
+/* ACTION CENTER */
+
+function renderActions(){
+
+    let html="";
+
+    inventory.forEach(p=>{
+
+        let available=Number(
+            p.available_stock??p.stock??0
+        );
+
+        let demand=getDemand(p);
+
+        let safety=Math.max(
+            3,
+            Math.ceil(demand*.2)
+        );
+
+        let replenish=Math.max(
+            0,
+            demand+safety-available
+        );
+
+
+        if(replenish>0){
+
+            html+=`
+
+            <div class="action">
+
+            <div class="action-left">
+
+            <span class="dot orange"></span>
+
+            <div>
+
+            <div class="action-name">
+            Replenish ${p.name}
+            </div>
+
+            <div class="action-desc">
+            Demand ${demand} • Available ${available} • Add ${replenish}
+            </div>
+
+            </div>
+
+            </div>
+
+            <span class="pill warn">
+            ADD ${replenish}
+            </span>
+
+            </div>`;
+
+        }
+
+    });
+
+
+    orders
+    .filter(o=>o.status==="AT_RISK")
+    .forEach(o=>{
+
+        html+=`
+
+        <div class="action">
+
+        <div class="action-left">
+
+        <span class="dot red"></span>
+
+        <div>
+
+        <div class="action-name">
+        Prioritize ${o.order_id}
+        </div>
+
+        <div class="action-desc">
+        ${o.customer_priority||"HIGH"} priority customer
+        </div>
+
+        </div>
+
+        </div>
+
+        <span class="pill critical">
+        REVIEW
+        </span>
+
+        </div>`;
+
+    });
+
+
+    if(!html){
+
+        html=`
+
+        <div class="action">
+
+        <div class="action-left">
+
+        <span class="dot green"></span>
+
+        <div>
+
+        <div class="action-name">
+        No immediate action
+        </div>
+
+        <div class="action-desc">
+        Warehouse is operating within safe limits.
+        </div>
+
+        </div>
+
+        </div>
+
+        <span class="pill good">
+        SAFE
+        </span>
+
+        </div>`;
+
+    }
+
+
+    document.getElementById(
+        "actionList"
+    ).innerHTML=html;
+
+}
+
+
+/* AI */
+
+async function loadAI(){
+
+    try{
+
+        let r=await fetch(
+            API+"/api/orders/WP-4029/analysis"
+        );
+
+        aiData=await r.json();
+
+        let required=Number(
+            aiData.required_quantity??10
+        );
+
+        let available=Number(
+            aiData.available_stock??0
+        );
+
+        let shortage=Math.max(
+            0,
+            required-available
+        );
+
+        let factors=
+            aiData.factor_scores||{};
+
+
+        document.getElementById(
+            "required"
+        ).innerText=required;
+
+        document.getElementById(
+            "available"
+        ).innerText=available;
+
+        document.getElementById(
+            "shortage"
+        ).innerText=shortage;
+
+
+        document.getElementById(
+            "riskScore"
+        ).innerText=
+            aiData.risk_score??79;
+
+
+        let cp=factors.customer_priority??100;
+        let bi=factors.business_impact??95;
+        let sla=factors.sla_urgency??75;
+
+
+        document.getElementById("fCustomer").innerText=cp;
+        document.getElementById("fBusiness").innerText=bi;
+        document.getElementById("fSLA").innerText=sla;
+
+        document.getElementById("bCustomer").style.width=cp+"%";
+        document.getElementById("bBusiness").style.width=bi+"%";
+        document.getElementById("bSLA").style.width=sla+"%";
+
+
+        document.getElementById(
+            "recommendation"
+        ).innerText=
+            aiData.recommendation||
+            "Prioritize this order";
+
+
+        document.getElementById(
+            "eCustomer"
+        ).innerText=cp;
+
+        document.getElementById(
+            "eBusiness"
+        ).innerText=bi;
+
+        document.getElementById(
+            "eSLA"
+        ).innerText=sla;
+
+
+        document.getElementById(
+            "explanationText"
+        ).innerText=
+            `The order requires ${required} units while only ${available} are currently available. This creates a ${shortage}-unit shortage. AI combines customer priority (${cp}/100), business impact (${bi}/100) and SLA urgency (${sla}/100) to determine the final risk.`;
+
+    }catch(e){
+
+        console.error(e);
+
+    }
+
+}
+
+
+/* SIMULATOR */
+
+function simulate(value){
+
+    value=Number(value);
+
+    let required=10;
+
+    let gap=value-required;
+
+    let risk;
+
+    if(value>=required){
+
+        risk=Math.max(
+            15,
+            45-(value-required)*3
+        );
+
+    }else{
+
+        risk=45+(required-value)*7;
+
+    }
+
+    risk=Math.min(
+        100,
+        Math.round(risk)
+    );
+
+
+    let status=
+        value>=required
+        ?"FULFILLABLE"
+        :value>=7
+        ?"AT RISK"
+        :"CRITICAL";
+
+
+    document.getElementById(
+        "simValue"
+    ).innerText=value;
+
+    document.getElementById(
+        "simGap"
+    ).innerText=
+        gap>=0
+        ?`+${gap}`
+        :gap;
+
+    document.getElementById(
+        "simRisk"
+    ).innerText=risk;
+
+    document.getElementById(
+        "simStatus"
+    ).innerText=status;
+
+
+    document.getElementById(
+        "simText"
+    ).innerText=
+        value>=required
+        ?"The simulated inventory can fulfill the order. Maintaining a small safety buffer is recommended."
+        :`The warehouse would be short by ${required-value} units. AI recommends replenishment or alternative allocation.`;
+
+}
+
+
+/* HISTORY */
+
+function getHistory(){
+
+    return JSON.parse(
+        localStorage.getItem(
+            "warehouseHistory"
+        )||"[]"
+    );
+
+}
+
+
+function addHistory(
+    order,
+    action,
+    description,
+    status
+){
+
+    let h=getHistory();
+
+    h.unshift({
+
+        date:new Date().toLocaleString("en-IN"),
+        order,
+        action,
+        description,
+        status
+
+    });
+
+    localStorage.setItem(
+        "warehouseHistory",
+        JSON.stringify(
+            h.slice(0,50)
+        )
+    );
+
+    renderHistory();
+
+}
+
+
+function renderHistory(){
+
+    let h=getHistory();
+
+    let box=document.getElementById(
+        "historyList"
+    );
+
+    if(!h.length){
+
+        box.innerHTML=`
+        <div class="history">
+        <div class="history-date">SYSTEM</div>
+        <div class="history-order">No actions yet</div>
+        <div class="history-desc">Warehouse decisions will appear here.</div>
+        <span class="pill good">READY</span>
+        </div>`;
+
+        return;
+
+    }
+
+
+    box.innerHTML=h.map(x=>`
+
+    <div class="history">
+
+    <div class="history-date">
+    ${x.date}
+    </div>
+
+    <div class="history-order">
+    ${x.order}
+    </div>
+
+    <div class="history-desc">
+    <b style="color:#dce5ef">${x.action}</b><br>
+    ${x.description}
+    </div>
+
+    <span class="pill ${
+        x.status==="REJECT"
+        ?"critical"
+        :x.status==="APPROVE"
+        ?"good"
+        :"warn"
+    }">
+    ${x.status}
+    </span>
+
+    </div>
+
+    `).join("");
+
+}
+
+
+/* TOAST */
+
+function toast(text){
+
+    let t=document.getElementById("toast");
+
+    t.innerText=text;
+    t.style.display="block";
+
+    setTimeout(
+        ()=>t.style.display="none",
+        2500
+    );
+
+}
+
+
+/* START */
+
+loadData();
+
+simulate(7);
+
+renderHistory();
+
+</script>
+
+</body>
+</html>
